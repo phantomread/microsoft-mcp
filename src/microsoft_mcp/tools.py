@@ -162,11 +162,13 @@ def list_emails(
     params = {
         "$top": min(limit, 100),
         "$select": select_fields,
-        "$orderby": "receivedDateTime desc",
     }
 
     if filter:
+        # Personal accounts don't support $filter + $orderby on different fields
         params["$filter"] = filter
+    else:
+        params["$orderby"] = "receivedDateTime desc"
 
     emails = list(
         graph.request_paginated(
